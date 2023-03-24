@@ -6,6 +6,7 @@ import { apiErrorFactory, NullError, InvalidProgramStateError } from './errors'
 import gunzip from './gunzip'
 import { inspect } from 'util'
 import get from 'lodash/get'
+import axiosDownload from './axios-download'
 
 export interface HttpClientAuth {
   accessToken: string
@@ -198,34 +199,6 @@ export class HttpClient {
       throw new InvalidProgramStateError(['Expected a signed URL.', res.statusText].join(' '))
     }
 
-    const download = await axios.get<ArrayBuffer>(location, {
-      responseType: 'arraybuffer',
-    })
-
-    if (download.status !== this.httpStatus.OK) {
-      throw new InvalidProgramStateError(`Expected OK HTTP status, but got: ${res.statusText}`)
-    }
-
-    const buffer = Buffer.from(download.data)
-    const contentType: string = download.headers['content-type']
-
-    const bufferToJson = (buf: Buffer): T => {
-      return JSON.parse(buf.toString())
-    }
-
-    switch (contentType) {
-      case JSON_CONTENT_TYPE:
-        return bufferToJson(buffer)
-      case 'application/x-gzip':
-      case 'application/octet-stream':
-        return gunzip(buffer)
-          .then(bufferToJson)
-          .catch(() => {
-            const bufferHex = Buffer.from(buffer.toString(), 'hex')
-            return gunzip(bufferHex).then(bufferToJson)
-          })
-      default:
-        throw new InvalidProgramStateError(`Unknown Content-Type: ${contentType}`)
-    }
+    return await axiosDownload(location)
   }
 }

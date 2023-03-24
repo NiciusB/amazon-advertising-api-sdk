@@ -7,7 +7,10 @@ import type { Headers } from './http-client'
 
 export interface ErrorObject {
   code: string
-  details: string
+  // This is optional because the operations from Reports V3 are currently returning a `detail` key instead of `details`. Might get resolved in the future. See: https://github.com/amzn/ads-advanced-tools-docs/issues/59
+  details?: string
+  // This exists because the operations from Reports V3 are currently returning a `detail` key instead of `details`. Might get resolved in the future. See: https://github.com/amzn/ads-advanced-tools-docs/issues/59
+  detail?: string
 }
 
 export class NullError extends ExtendableError {
@@ -45,7 +48,7 @@ export class GenericError extends ExtendableError {
   public requestId: string
 
   public constructor(err: ErrorObject, headers: Headers) {
-    super(err.details)
+    super(err.details ?? err.detail)
     this.code = err.code
     this.requestId = headers['x-amz-request-id'] || headers['x-amz-rid'] || ''
   }

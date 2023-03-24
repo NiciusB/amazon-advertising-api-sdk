@@ -4,7 +4,7 @@ import assert from 'node:assert'
 import { AsyncReport } from './report-response'
 import { AsyncReportTypeId, CreateAsyncReportRequest } from './base-report-params'
 
-export default class BaseV3ReportOperation<
+export class BaseV3ReportOperation<
   TypeId extends AsyncReportTypeId = AsyncReportTypeId,
 > extends Operation {
   async getReport(reportId: string): Promise<AsyncReport<TypeId>> {

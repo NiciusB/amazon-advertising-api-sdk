@@ -1,6 +1,6 @@
 import { AsyncReportConfiguration, AsyncReportTypeId } from './base-report-params'
 
-export type AsyncReport<TypeId extends AsyncReportTypeId> = {
+export type AsyncReport<TypeId extends AsyncReportTypeId = AsyncReportTypeId> = {
   reportId: string
   endDate: string
   configuration: AsyncReportConfiguration<TypeId>

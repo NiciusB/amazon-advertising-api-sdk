@@ -25,6 +25,7 @@ export default async function axiosDownload<T>(location: string): Promise<T> {
       return bufferToJson(buffer)
     case 'application/x-gzip':
     case 'application/octet-stream':
+    case 'binary/octet-stream':
       return gunzip(buffer)
         .then(bufferToJson)
         .catch(() => {
